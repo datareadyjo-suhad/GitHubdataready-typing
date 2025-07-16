@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>مدرب الطباعة - المرحلة الأولى</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@600&display=swap');
+    body {
+      font-family: 'Cairo', sans-serif;
+      direction: rtl;
+      background: linear-gradient(to bottom, #f7f0f7, #fff4fb);
+      padding: 20px;
+      color: #2e4d41;
+    }
+    h1 {
+      text-align: center;
+      color: #256d5a;
+      font-size: 32px;
+    }
+    .section {
+      margin: 30px auto;
+      max-width: 700px;
+      background-color: #ffffffee;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+    .hidden { display: none; }
+    .typing-box input {
+      width: 100%;
+      padding: 18px;
+      font-size: 22px;
+      border: 2px solid #f2c0da;
+      border-radius: 10px;
+      text-align: left;
+      direction: ltr;
+    }
+    .status {
+      margin-top: 12px;
+      font-weight: bold;
+      color: #d14a87;
+    }
+    .instruction {
+      font-size: 20px;
+      margin-bottom: 15px;
+      background-color: #fff0f8;
+      padding: 10px;
+      border-radius: 8px;
+      line-height: 1.7;
+    }
+    .phrase-box {
+      margin-bottom: 10px;
+      font-size: 20px;
+      color: #9a3d77;
+      background-color: #fff4fa;
+      padding: 8px;
+      border-radius: 6px;
+    }
+    #timer {
+      font-size: 24px;
+      color: #c0392b;
+      margin-bottom: 15px;
+      font-weight: bold;
+      text-align: center;
+    }
+    #attemptCount {
+      font-size: 18px;
+      color: #c0392b;
+      margin: 10px auto;
+      text-align: center;
+      font-weight: bold;
+    }
+    .retry-button {
+      margin-top: 15px;
+      background-color: #c0392b;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 18px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .name-section input {
+      padding: 12px;
+      font-size: 20px;
+      width: 100%;
+      border-radius: 10px;
+      border: 2px solid #e7a3cb;
+    }
+    .start-btn {
+      margin-top: 15px;
+      background-color: #e066a1;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 18px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .logo {
+      display: block;
+      margin: 0 auto 20px;
+      max-width: 120px;
+    }
+    .wrong-letter {
+      background-color: #ffcccc;
+    }
+  </style>
+</head>
+<body>
+  <img src="loge.png" class="logo" alt="شعار المنصة">
+  <h1>DataReady-Typing</h1>
+  <div id="attemptCount">المحاولة رقم: 1</div>
+
+  <div id="nameStep" class="section">
+    <div class="instruction">👤 الرجاء إدخال اسمك للبدء:</div>
+    <div class="name-section">
+      <input id="userName" placeholder="أدخل اسمك هنا...">
+      <button class="start-btn" onclick="startTraining()">ابدأ التدريب</button>
+    </div>
+  </div>
+
+  <div id="step1" class="section hidden">
+    <div class="instruction">✋ تدريب 1 (سهل جدًا): فقط F و J<br> مبتدئ؟ ابدأ هنا!</div>
+    <div class="typing-box">
+      <div class="phrase-box">المطلوب: FJFJ FFJJ</div>
+      <input id="input1" oninput="checkTraining('input1','FJFJ FFJJ','status1','step2')">
+      <div id="status1" class="status"></div>
+    </div>
+  </div>
+
+  <div id="step2" class="section hidden">
+    <div class="instruction">💪 تدريب 2: D و K يبدأ الإضافة</div>
+    <div class="typing-box">
+      <div class="phrase-box">المطلوب: DKDK KDDF</div>
+      <input id="input2" oninput="checkTraining('input2','DKDK KDDF','status2','step3')">
+      <div id="status2" class="status"></div>
+    </div>
+  </div>
+
+  <div id="step3" class="section hidden">
+    <div class="instruction">🔥 تدريب 3: دمج الأربعة</div>
+    <div class="typing-box">
+      <div class="phrase-box">المطلوب: FJDK FKDJ JDFK FJKD</div>
+      <input id="input3" oninput="checkTraining('input3','FJDK FKDJ JDFK FJKD','status3','step4')">
+      <div id="status3" class="status"></div>
+    </div>
+  </div>
+
+  <div id="step4" class="section hidden">
+    <div class="instruction">⚡ تدريب 4: أصعب شوي، كن حذرًا!</div>
+    <div class="typing-box">
+      <div class="phrase-box">المطلوب: FJF DFK JDK FKJ DFJ KDFJ</div>
+      <input id="input4" oninput="checkTraining('input4','FJF DFK JDK FKJ DFJ KDFJ','status4','step5')">
+      <div id="status4" class="status"></div>
+    </div>
+  </div>
+
+  <div id="step5" class="section hidden">
+    <div class="instruction">🧠 تدريب 5 النهائي: تدريب شامل 250 حرف، مزيج حروف وأحجام</div>
+    <div class="phrase-box" id="finalText"></div>
+    <div class="typing-box">
+      <input id="input5" placeholder="ابدأ الكتابة هنا..." oninput="checkFinal(this)" />
+      <div id="status5" class="status"></div>
+      <button class="retry-button hidden" id="retryBtn" onclick="restart()">🔁 حاول مرة أخرى</button>
+    </div>
+  </div>
+
+  <audio id="soundCorrect" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
+  <audio id="soundWrong" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+
+<script>
+  let attempt = 1;
+  const finalStr = "FdJk JD Kf Dj fK KJ df FJ Dj DdDD Dk fj FK jD Df kj KkKk KF KJ df DJ fk JD FfFf KJ df Dj JD fk DK KJ dfJD fJ dK Fj kjDF fk Dj jD FjDJ JD Kj FK dF jd Kf DJ fK dF KJ JD dj dDkK dk fKjD dF Kj JD dj FKjd KJ df fK fJ jD jjJJ dJ Kj";
+
+  function playOk(){ document.getElementById('soundCorrect').play(); }
+  function playFail(){ document.getElementById('soundWrong').play(); }
+
+  function startTraining(){
+    if(!document.getElementById('userName').value.trim()) return alert("اكتب اسمك!");
+    document.getElementById('nameStep').classList.add('hidden');
+    document.getElementById('step1').classList.remove('hidden');
+    document.getElementById('finalText').innerText = finalStr;
+  }
+
+  function checkTraining(id, correct, status, next){
+    const val = document.getElementById(id).value.trim();
+    if(val === correct){
+      playOk();
+      document.getElementById(status).innerText="✅ صح! انطلق للمرحلة التالية";
+      setTimeout(() => {
+        document.getElementById(id).disabled=true;
+        document.getElementById(next).classList.remove('hidden');
+      },500);
+    } else {
+      playFail();
+      document.getElementById(status).innerText="❌ خطأ، حاول مرة ثانية";
+    }
+  }
+
+  let wrongFlag = false;
+  function checkFinal(el){
+    const val = el.value;
+    const tgt = finalStr;
+    const compareLen = Math.min(val.length, tgt.length);
+    let errorFound = false;
+
+    for(let i=0; i<compareLen; i++){
+      if(val[i] !== tgt[i]){
+        errorFound = true;
+        if(!wrongFlag){
+          playFail();
+          wrongFlag = true;
+        }
+        break;
+      }
+    }
+
+    if(!errorFound) wrongFlag = false;
+
+    if(val.length < tgt.length){
+      document.getElementById('status5').innerText=`📝 ${val.length}/${tgt.length} حرف`;
+    } else {
+      if(val===tgt){
+        playOk();
+        document.getElementById('status5').innerText="🎉 تمام 100%";
+      } else {
+        playFail();
+        document.getElementById('status5').innerText="🚫 في أخطاء، أعد المحاولة!";
+      }
+      document.getElementById('retryBtn').classList.remove('hidden');
+    }
+  }
+
+  function restart(){
+    attempt++;
+    document.getElementById('attemptCount').innerText=`المحاولة رقم: ${attempt}`;
+    document.getElementById('input5').value="";
+    document.getElementById('status5').innerText="";
+    document.getElementById('retryBtn').classList.add('hidden');
+    wrongFlag = false;
+  }
+</script>
+</body>
+</html>

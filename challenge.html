@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>تحدي المفاتيح الأربعة</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+
+    body {
+      font-family: 'Cairo', sans-serif;
+      background-image: url('https://images.unsplash.com/photo-1606761568499-6e768d45f3b4?auto=format&fit=crop&w=1400&q=80');
+      background-size: cover;
+      background-position: center;
+      direction: rtl;
+      padding: 2rem;
+      color: #222;
+      text-align: center;
+    }
+    .container {
+      max-width: 750px;
+      margin: auto;
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    #challenge, #result, #typing-area {
+      display: none;
+    }
+    button {
+      background: #d6458b;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background: #b93b79;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+      margin-top: 1rem;
+      font-size: 1.2rem;
+      padding: 1rem;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      resize: none;
+      background-color: #f9f9f9;
+    }
+    #timer {
+      font-size: 1.2rem;
+      margin: 1rem 0;
+      font-weight: bold;
+      color: #e63946;
+    }
+    #error-details {
+      margin-top: 1rem;
+      padding: 1rem;
+      background-color: #fff0f3;
+      border: 1px solid #e63946;
+      border-radius: 10px;
+      color: #b90024;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div id="intro">
+    <h2>🎮 تحدي المفاتيح الأربعة</h2>
+    <p>
+      في هذا التحدي، رح تستخدم فقط الأحرف: <strong>F, J, K, D</strong><br>
+      لازم تكتب النص المعروض بدقة وسرعة خلال الوقت المحدد. خذ نفس وركّز 👊<br>
+      لا تنسى: بين كل مقطع يوجد <strong>فراغ واحد فقط!</strong>
+    </p>
+    <button onclick="startChallenge()">ابدأ التحدي</button>
+  </div>
+
+  <div id="challenge">
+    <h3>⏱ الوقت المتبقي: <span id="timer">120</span> ثانية</h3>
+    <div id="typing-area">
+      <p id="text-to-type">
+        fjkd fjkd fj fjkd kd fj fjkd kdfj jdfk djkf <br>
+        dfkj fjkd kd kdjf jfkd ddff fj kkkk jfkd kdjk <br>
+        fj jjkk fjk fjdj fjkd jdkf fj fkjd kjdf dfjk <br>
+        fjdk ffff jfkd djkf fjkd ddjj jdfk kdjf fjkd
+      </p>
+      <textarea id="user-input" placeholder="اكتب هنا تمامًا كما هو ظاهر أعلاه..."></textarea>
+    </div>
+    <button onclick="submitChallenge()">إنهاء</button>
+  </div>
+
+  <div id="result">
+    <h3>💡 النتيجة:</h3>
+    <p id="feedback"></p>
+    <div id="error-details"></div>
+    <button onclick="location.reload()">إعادة التحدي</button>
+  </div>
+</div>
+
+<script>
+  let timeLeft = 120;
+  let timerInterval;
+
+  function startChallenge() {
+    document.getElementById('intro').style.display = 'none';
+    document.getElementById('challenge').style.display = 'block';
+    document.getElementById('typing-area').style.display = 'block';
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      document.getElementById("timer").textContent = timeLeft;
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        submitChallenge();
+      }
+    }, 1000);
+  }
+
+  function submitChallenge() {
+    clearInterval(timerInterval);
+    const expectedText = document.getElementById("text-to-type").innerText.replace(/\n/g, ' ').replace(/ +/g, ' ').trim();
+    const userText = document.getElementById("user-input").value.replace(/\n/g, ' ').replace(/ +/g, ' ').trim();
+
+    document.getElementById("challenge").style.display = 'none';
+    document.getElementById("result").style.display = 'block';
+
+    const expectedArray = expectedText.split('');
+    const userArray = userText.split('');
+
+    let errors = [];
+    const minLen = Math.min(expectedArray.length, userArray.length);
+    for (let i = 0; i < minLen; i++) {
+      if (expectedArray[i] !== userArray[i]) {
+        errors.push(`في الموضع ${i + 1}: المتوقع '${expectedArray[i]}', لكن كتبت '${userArray[i] || "فراغ"}'`);
+      }
+    }
+    if (expectedArray.length > userArray.length) {
+      errors.push(`نقص ${expectedArray.length - userArray.length} حرف/حروف في النهاية.`);
+    } else if (userArray.length > expectedArray.length) {
+      errors.push(`زيادة ${userArray.length - expectedArray.length} حرف/حروف في النهاية.`);
+    }
+
+    document.getElementById("feedback").textContent =
+      errors.length === 0
+        ? "👏 أحسنت! كتبت النص بدقة تامة وفي الوقت المحدد!"
+        : `❌ هناك ${errors.length} خطأ(أخطاء): راجع التالي:`;
+
+    document.getElementById("error-details").innerHTML = errors.map(e => `• ${e}`).join('<br>');
+  }
+</script>
+</body>
+</html>
